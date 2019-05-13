@@ -2,7 +2,7 @@ node('python') {
 
   // run tests
   try {
-    notifyBuild('STARTED')
+    // notifyBuild('STARTED')
 
     // Mark the code checkout 'stage'....
     stage('Checkout') {
