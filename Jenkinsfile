@@ -42,7 +42,7 @@ node('python') {
   } finally {
 
     // success or failure, always send notifications
-    notifyBuild(currentBuild.result)
+    setBuildStatus("Build failed", "FAILURE");
 
   }
 }
