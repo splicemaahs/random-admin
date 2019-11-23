@@ -13,7 +13,11 @@ if [ ! -d "/usr/local/kubectl" ]; then
   MY_LOGON=$(whoami)
   echo ${MY_LOGON}
   sudo mkdir -p /usr/local/kubectl
-  sudo chown ${MY_LOGON}:root /usr/local/kubectl
+  if [[ "${TARGET_OS}" == "darwin" ]]; then
+    sudo chown ${MY_LOGON}:admin /usr/local/kubectl
+  elif [[ "${TARGET_OS}" == "linux" ]]; then
+    sudo chown ${MY_LOGON}:${MY_LOGON} /usr/local/kubectl
+  fi
 fi;
 if [ ! -d "/usr/local/kubectl/${KUBECTL_CLIENT}" ]; then
   sudo mkdir -p "/usr/local/kubectl/${KUBECTL_CLIENT}"
