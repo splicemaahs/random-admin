@@ -47,7 +47,11 @@ if [ ! -d "/usr/local/helm" ]; then
   MY_LOGON=$(whoami)
   echo ${MY_LOGON}
   sudo mkdir -p /usr/local/helm
-  sudo chown ${MY_LOGON}:admin /usr/local/helm
+  if [[ "${TARGET_OS}" == "darwin" ]]; then
+    sudo chown ${MY_LOGON}:admin /usr/local/helm
+  elif [[ "${TARGET_OS}" == "linux" ]]; then
+    sudo chown ${MY_LOGON}:${MY_LOGON} /usr/local/helm
+  fi
 fi;
 
 if which helm >/dev/null 2>&1; then
@@ -67,13 +71,13 @@ else
     fi
   fi
   if [ -f "/usr/local/bin/helm" ]; then
-    rm "/usr/local/bin/helm"
+    sudo rm "/usr/local/bin/helm"
   fi
-  ln -s "/usr/local/helm/${HELM_SERVER}/${TARGET_OS}-amd64/helm" "/usr/local/bin/helm"
+  sudo ln -s "/usr/local/helm/${HELM_SERVER}/${TARGET_OS}-amd64/helm" "/usr/local/bin/helm"
   if [ -f "/usr/local/bin/tiller" ]; then
-    rm "/usr/local/bin/tiller"
+    sudo rm "/usr/local/bin/tiller"
   fi
-  ln -s "/usr/local/helm/${HELM_SERVER}/${TARGET_OS}-amd64/tiller" "/usr/local/bin/tiller"
+  sudo ln -s "/usr/local/helm/${HELM_SERVER}/${TARGET_OS}-amd64/tiller" "/usr/local/bin/tiller"
 
   HELM_CLIENT=$(helm version --template "{{.Client.SemVer}}")
   HELM_SERVER=$(helm version --template "{{.Server.SemVer}}")
@@ -94,12 +98,12 @@ if [[ ! -z "${HELM_SERVER}" ]]; then
     fi
   fi
   if [ -f "/usr/local/bin/helm" ]; then
-    rm "/usr/local/bin/helm"
+    sudo rm "/usr/local/bin/helm"
   fi
-  ln -s "/usr/local/helm/${HELM_SERVER}/${TARGET_OS}-amd64/helm" "/usr/local/bin/helm"
+  sudo ln -s "/usr/local/helm/${HELM_SERVER}/${TARGET_OS}-amd64/helm" "/usr/local/bin/helm"
   if [ -f "/usr/local/bin/tiller" ]; then
-    rm "/usr/local/bin/tiller"
+    sudo rm "/usr/local/bin/tiller"
   fi
-  ln -s "/usr/local/helm/${HELM_SERVER}/${TARGET_OS}-amd64/tiller" "/usr/local/bin/tiller"
+  sudo ln -s "/usr/local/helm/${HELM_SERVER}/${TARGET_OS}-amd64/tiller" "/usr/local/bin/tiller"
 fi
 

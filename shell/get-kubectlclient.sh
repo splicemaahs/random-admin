@@ -50,7 +50,11 @@ if [ ! -d "/usr/local/kubectl" ]; then
   MY_LOGON=$(whoami)
   echo ${MY_LOGON}
   sudo mkdir -p /usr/local/kubectl
-  sudo chown ${MY_LOGON}:admin /usr/local/kubectl
+  if [[ "${TARGET_OS}" == "darwin" ]]; then
+    sudo chown ${MY_LOGON}:admin /usr/local/kubectl
+  elif [[ "${TARGET_OS}" == "linux" ]]; then
+    sudo chown ${MY_LOGON}:${MY_LOGON} /usr/local/kubectl
+  fi
 fi;
 
 if which kubectl >/dev/null 2>&1; then
@@ -62,20 +66,12 @@ else
     sudo wget --quiet -O "/usr/local/kubectl/${KUBECTL_CLIENT}/kubectl" "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_CLIENT}/bin/${TARGET_OS}/amd64/kubectl"
     if [ -f "/usr/local/kubectl/${KUBECTL_CLIENT}/kubectl" ]; then
       sudo chmod 775 "/usr/local/kubectl/${KUBECTL_CLIENT}/kubectl"
-      if [ -f "/usr/local/bin/kubectl" ]; then
-        sudo rm "/usr/local/bin/kubectl"
-        sudo ln -s "/usr/local/kubectl/${KUBECTL_CLIENT}/kubectl" "/usr/local/bin/kubectl"
-      else
-        sudo ln -s "/usr/local/kubectl/${KUBECTL_CLIENT}/kubectl" "/usr/local/bin/kubectl"
-      fi
     fi
   fi
   if [ -f "/usr/local/bin/kubectl" ]; then
     sudo rm "/usr/local/bin/kubectl"
-    sudo ln -s "/usr/local/kubectl/${KUBECTL_CLIENT}/kubectl" "/usr/local/bin/kubectl"
-  else
-    sudo ln -s "/usr/local/kubectl/${KUBECTL_CLIENT}/kubectl" "/usr/local/bin/kubectl"
   fi
+  sudo ln -s "/usr/local/kubectl/${KUBECTL_CLIENT}/kubectl" "/usr/local/bin/kubectl"
   KUBECTL_SERVER=$(kubectl version --output=json | jq -r .serverVersion.gitVersion)
 fi
 echo ${KUBECTL_SERVER}
@@ -85,15 +81,11 @@ if [[ ! -z "${KUBECTL_SERVER}" ]]; then
     wget --quiet -O "/usr/local/kubectl/${KUBECTL_SERVER}/kubectl" "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_SERVER}/bin/${TARGET_OS}/amd64/kubectl"
     if [ -f "/usr/local/kubectl/${KUBECTL_SERVER}/kubectl" ]; then
       chmod 775 "/usr/local/kubectl/${KUBECTL_SERVER}/kubectl"
-      if [ -f "/usr/local/bin/kubectl" ]; then
-        rm "/usr/local/bin/kubectl"
-        ln -s "/usr/local/kubectl/${KUBECTL_SERVER}/kubectl" "/usr/local/bin/kubectl"
-      fi
     fi
   fi
   if [ -f "/usr/local/bin/kubectl" ]; then
-    rm "/usr/local/bin/kubectl"
+    sudo rm "/usr/local/bin/kubectl"
   fi
-  ln -s "/usr/local/kubectl/${KUBECTL_SERVER}/kubectl" "/usr/local/bin/kubectl"
+  sudo ln -s "/usr/local/kubectl/${KUBECTL_SERVER}/kubectl" "/usr/local/bin/kubectl"
 fi
 
